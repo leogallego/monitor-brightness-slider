@@ -1,0 +1,16 @@
+{
+  "description": "Brightness and volume control for monitors. Requires setting up the external ddcutil program for your user.\n\nNote: ensure that ddcutil works properly on the command line before attempting this extension.",
+  "gettext-domain": "monitor-brightness-slider",
+  "name": "Control monitor brightness and volume with ddcutil",
+  "settings-schema": "org.gnome.shell.extensions.monitor-brightness-slider",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49"
+  ],
+  "url": "https://github.com/leogallego/monitor-brightness-slider/issues",
+  "uuid": "monitor-brightness-slider@leogallego",
+  "version": 1
+}
