@@ -15,6 +15,11 @@ glib-compile-schemas schemas/
 # Install extension for current user
 ln -s "$(pwd)" ~/.local/share/gnome-shell/extensions/monitor-brightness-slider@leogallego
 
+# Enable/disable/manage the extension via gnome-extensions CLI
+gnome-extensions enable monitor-brightness-slider@leogallego
+gnome-extensions disable monitor-brightness-slider@leogallego
+gnome-extensions info monitor-brightness-slider@leogallego
+
 # Restart GNOME Shell (X11 only; on Wayland, log out and back in)
 busctl --user call org.gnome.Shell /org/gnome/Shell org.gnome.Shell Eval s 'Meta.restart("Restarting…")'
 
@@ -22,7 +27,7 @@ busctl --user call org.gnome.Shell /org/gnome/Shell org.gnome.Shell Eval s 'Meta
 journalctl -f -o cat /usr/bin/gnome-shell | grep 'monitor-brightness-slider'
 ```
 
-No build system, bundler, or tests exist. The extension is pure JavaScript loaded directly by GNOME Shell.
+No build system, bundler, or tests exist. The extension is pure JavaScript loaded directly by GNOME Shell. Always use `gnome-extensions` CLI for extension management (enable, disable, install, info) — never manipulate extension state manually through dconf or by toggling files.
 
 ## Architecture
 
@@ -37,9 +42,12 @@ No build system, bundler, or tests exist. The extension is pure JavaScript loade
 - `js/ui/sliderItem.js` — Base `QuickSlider` subclass with a monitor icon indicator.
 - `js/ui/brightnessItem.js` — Brightness slider (VCP code `0x10`).
 
+- `js/utils.js` — Shared utilities: `LOG` (prefixed console logger), `sleep` (GLib timeout-based), `castInt`, `isEmpty`, `avgVM` (average value/max ratio), and `clearAllTimeouts` (cleanup of all pending sleep timers).
 - `js/lock.js` — Promise-based mutex for serializing async operations.
 - `js/processManager.js` + `js/killableProcess.js` — Process lifecycle management with cancellation support. All spawned `ddcutil` processes are tracked and killed on `disable()`.
 - `js/promisify.js` — Promisifies GIO subprocess methods for async/await usage.
+
+No `prefs.js` exists — the extension has no preferences UI. Settings (keyboard shortcuts, retry count) are only configurable via `gsettings` or dconf.
 
 ## Documentation Reference
 
@@ -64,3 +72,5 @@ This takes precedence over general web knowledge. Always consult it before falli
 - **I2C bus serialization**: All ddcutil calls are serialized through `Lock` to prevent I2C bus congestion. Multiple monitors are queried in parallel only at the `DdcutilHelper` level after acquiring the lock per-command.
 - **Startup timing**: Extension delays initialization until `startup-complete` or after a 5-second settle period to avoid I2C conflicts during display detection.
 - **Settings schema**: GSettings schema in `schemas/org.gnome.shell.extensions.monitor-brightness-slider.gschema.xml` — configurable keyboard shortcuts and retry count.
+- **`disable()` cleanup contract**: GNOME requires extensions to fully undo all side effects in `disable()`. Every signal connection, GLib timeout source, keybinding, UI widget, and spawned process must be disconnected/removed/destroyed/killed. The `clearAllTimeouts()` helper cleans up `sleep()` timers, and `ProcessManager.killAllRunningProcesses()` cleans up ddcutil subprocesses. Forgetting cleanup causes GNOME Shell errors on lock screen, extension disable, or session end.
+- **Slider value range**: Slider values are 0.0–1.0 (fractional). DDC VCP values are integers 0–max (per-bus `maxrng`). Conversion happens in `DdcutilHelper._setVcpAllScaleInt` which scales `value * (bus_maxrng / 100)`.
