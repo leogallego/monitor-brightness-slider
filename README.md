@@ -1,8 +1,8 @@
 # monitor-brightness-slider
 
-GNOME Shell extension to control external monitor brightness and volume via DDC/CI using `ddcutil`.
+GNOME Shell extension to control external monitor brightness via DDC/CI using `ddcutil`.
 
-Adds brightness and volume sliders to the GNOME QuickSettings panel for DDC/CI-capable monitors. Supports keyboard shortcuts and multiple monitors.
+Adds a brightness slider to the GNOME QuickSettings panel for DDC/CI-capable monitors. Supports keyboard shortcuts and multiple monitors.
 
 ## Prerequisites
 
