@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="display-brightness-ddcutil">
+<schemalist gettext-domain="monitor-brightness-slider">
   <schema id="org.gnome.shell.extensions.monitor-brightness-slider"
     path="/org/gnome/shell/extensions/monitor-brightness-slider/">
     <key type="as" name="monitor-screen-brightness-up">
@@ -9,18 +9,6 @@
     <key type="as" name="monitor-screen-brightness-down">
       <default><![CDATA[['<Control>XF86MonBrightnessDown']]]></default>
       <summary>Monitor Brightness Down Keybinding</summary>
-    </key>
-    <key type="as" name="monitor-volume-up">
-      <default><![CDATA[['<Control>XF86AudioRaiseVolume']]]></default>
-      <summary>Monitor Volume Up Keybinding</summary>
-    </key>
-    <key type="as" name="monitor-volume-down">
-      <default><![CDATA[['<Control>XF86AudioLowerVolume']]]></default>
-      <summary>Monitor Volume Down Keybinding</summary>
-    </key>
-    <key type="b" name="show-volume">
-      <default>true</default>
-      <summary>Show Volume</summary>
     </key>
     <key type="u" name="ddcutil-retries">
       <range min="1" max="10" />

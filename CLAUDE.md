@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GNOME Shell extension that adds brightness and volume sliders to the QuickSettings panel for controlling external monitors via DDC/CI using `ddcutil`. UUID: `monitor-brightness-slider@leogallego`. Supports GNOME Shell 45-49.
+GNOME Shell extension that adds a brightness slider to the QuickSettings panel for controlling external monitors via DDC/CI using `ddcutil`. UUID: `monitor-brightness-slider@leogallego`. Supports GNOME Shell 45-49.
 
 ## Build & Install
 
@@ -26,7 +26,7 @@ No build system, bundler, or tests exist. The extension is pure JavaScript loade
 
 ## Architecture
 
-- `extension.js` — Main entry point. `MonitorBrightnessVolumeExtension` class handles `enable()`/`disable()` lifecycle, monitor detection loop, keyboard shortcuts, and slider callbacks. Inserts sliders into QuickSettings next to the built-in brightness/volume indicators.
+- `extension.js` — Main entry point. `MonitorBrightnessSliderExtension` class handles `enable()`/`disable()` lifecycle, monitor detection loop, keyboard shortcuts, and slider callback. Adds brightness slider to QuickSettings via `SystemIndicator`.
 
 - `js/ddcutilWrapper.js` — Spawns `ddcutil` subprocesses for `detect`, `getvcp`, and `setvcp` commands. Parses terse output. Uses a `Lock` to serialize I2C bus access and prevent bus congestion.
 
@@ -36,7 +36,6 @@ No build system, bundler, or tests exist. The extension is pure JavaScript loade
 
 - `js/ui/sliderItem.js` — Base `QuickSlider` subclass with a monitor icon indicator.
 - `js/ui/brightnessItem.js` — Brightness slider (VCP code `0x10`).
-- `js/ui/volumeItem.js` — Volume slider (VCP code `0x62`) with dynamic volume icons.
 
 - `js/lock.js` — Promise-based mutex for serializing async operations.
 - `js/processManager.js` + `js/killableProcess.js` — Process lifecycle management with cancellation support. All spawned `ddcutil` processes are tracked and killed on `disable()`.
@@ -64,4 +63,4 @@ This takes precedence over general web knowledge. Always consult it before falli
 - **GJS imports**: Uses `gi://` URIs for GNOME libraries and `resource:///` for Shell internals.
 - **I2C bus serialization**: All ddcutil calls are serialized through `Lock` to prevent I2C bus congestion. Multiple monitors are queried in parallel only at the `DdcutilHelper` level after acquiring the lock per-command.
 - **Startup timing**: Extension delays initialization until `startup-complete` or after a 5-second settle period to avoid I2C conflicts during display detection.
-- **Settings schema**: GSettings schema in `schemas/org.gnome.shell.extensions.monitor-brightness-slider.gschema.xml` — configurable keyboard shortcuts, volume visibility toggle, and retry count.
+- **Settings schema**: GSettings schema in `schemas/org.gnome.shell.extensions.monitor-brightness-slider.gschema.xml` — configurable keyboard shortcuts and retry count.
